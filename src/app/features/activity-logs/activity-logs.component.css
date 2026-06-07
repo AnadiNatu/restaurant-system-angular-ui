@@ -1,0 +1,100 @@
+    .logs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+ 
+    .log-entry {
+      display: flex;
+      align-items: stretch;
+      gap: 0.75rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      transition: border-color var(--ease-fast), background var(--ease-fast);
+      overflow: hidden;
+    }
+ 
+    .log-entry:hover { border-color: var(--border-soft); background: var(--bg-raised); }
+ 
+    .log-indicator {
+      width: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      background: var(--border-medium);
+    }
+ 
+    .ind-super_admin { background: #c0a0e8; }
+    .ind-admin       { background: var(--accent-amber); }
+    .ind-employee    { background: var(--accent-sage2); }
+ 
+    .log-body { flex: 1; min-width: 0; }
+ 
+    .log-top {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.3rem;
+    }
+ 
+    .log-action {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 0.78rem;
+    }
+ 
+    .log-entity {
+      font-size: 0.72rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-dim);
+      padding: 0.1em 0.5em;
+      border-radius: var(--radius-full);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+ 
+    .log-entity-id { font-size: 0.78rem; color: var(--accent-amber2); font-weight: 600; }
+ 
+    .log-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+ 
+    .log-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+ 
+    .log-actor {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+ 
+    .log-ip {
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      background: var(--bg-raised);
+      padding: 0.1em 0.5em;
+      border-radius: var(--radius-full);
+      font-family: monospace;
+    }
+ 
+    .log-time {
+      flex-shrink: 0;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+ 
+    .log-date { font-size: 0.75rem; color: var(--text-muted); }
+    .log-hour { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; }
