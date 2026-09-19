@@ -66,5 +66,6 @@ export class OrderListComponent implements OnInit{
     });
   }
 
-
+// Make use of "getMyOrders(): Observable<OrderResponse[]>" , "getByStatus(status: string): Observable<OrderResponse[]>" &
+// getByCustomer(id: number): Observable<OrderResponse[]>
 }

@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.css'
 })
@@ -18,7 +18,9 @@ private fb    = inject(FormBuilder);
   loading = signal(false);
   sent    = signal(false);
  
-  form = this.fb.group({ email: ['', [Validators.required, Validators.email]] });
+  form = this.fb.group({
+    email: ['', [Validators.required, Validators.email]]
+  });
  
   submit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }

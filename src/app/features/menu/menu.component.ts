@@ -18,7 +18,8 @@ export class MenuComponent {
   private menuSvc = inject(MenuService);
   private fb      = inject(FormBuilder);
   private toast   = inject(ToastService);
- 
+ // Make use of the getById(id: number): Observable<MenuItemResponse>
+// , getAvailable(): Observable<MenuItemResponse[]> & getByCategory(cat: string): Observable<MenuItemResponse[]>  
   loading      = signal(true);
   saving       = signal(false);
   showModal    = signal(false);

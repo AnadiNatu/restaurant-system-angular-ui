@@ -15,6 +15,300 @@
           <button class="btn btn-primary" (click)="openCreate()">+ Add Item</button>
         </div>
       </div>
+
+      <!-- ========================================================= -->
+<!-- INVENTORY API INSIGHTS -->
+<!-- ========================================================= -->
+
+<div class="inventory-api-card">
+
+  <!-- ======================================================= -->
+  <!-- HEADER -->
+  <!-- ======================================================= -->
+
+  <div class="inventory-api-header">
+
+    <div>
+      <h3>Inventory Insights</h3>
+
+      <span>
+        Live inventory data from the reporting endpoints
+      </span>
+    </div>
+
+    @if (apiLoading()) {
+
+      <span class="inventory-api-loading">
+        Loading...
+      </span>
+
+    }
+
+  </div>
+
+
+  <!-- ======================================================= -->
+  <!-- API ACTIONS -->
+  <!-- ======================================================= -->
+
+  <div class="inventory-api-actions">
+
+
+    <!-- ===================================================== -->
+    <!-- LOW STOCK -->
+    <!-- ===================================================== -->
+
+    <div class="inventory-api-action">
+
+      <div class="inventory-api-action-info">
+
+        <span class="inventory-api-icon">
+          ⚠
+        </span>
+
+        <div>
+          <strong>Low Stock</strong>
+
+          <small>
+            GET /inventory/low-stock
+          </small>
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn btn-danger btn-sm"
+        type="button"
+        [disabled]="apiLoading()"
+        (click)="loadLowStock()">
+
+        {{ apiLoading() ? 'Loading...' : 'Check Stock' }}
+
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- WEEKLY COST -->
+    <!-- ===================================================== -->
+
+    <div class="inventory-api-action">
+
+      <div class="inventory-api-action-info">
+
+        <span class="inventory-api-icon">
+          ◷
+        </span>
+
+        <div>
+          <strong>Weekly Cost</strong>
+
+          <small>
+            GET /inventory/cost/weekly
+          </small>
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
+        [disabled]="apiLoading()"
+        (click)="loadWeeklyCost()">
+
+        {{ apiLoading() ? 'Loading...' : 'View Cost' }}
+
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- MONTHLY COST -->
+    <!-- ===================================================== -->
+
+    <div class="inventory-api-action">
+
+      <div class="inventory-api-action-info">
+
+        <span class="inventory-api-icon">
+          ◴
+        </span>
+
+        <div>
+          <strong>Monthly Cost</strong>
+
+          <small>
+            GET /inventory/cost/monthly
+          </small>
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
+        [disabled]="apiLoading()"
+        (click)="loadMonthlyCost()">
+
+        {{ apiLoading() ? 'Loading...' : 'View Cost' }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ======================================================= -->
+  <!-- LOW STOCK RESULT -->
+  <!-- ======================================================= -->
+
+  @if (lowStockApiItems() !== null) {
+
+    <div class="inventory-api-result">
+
+      <div class="inventory-result-header">
+
+        <div>
+          <strong>
+            Low Stock Items
+          </strong>
+
+          <span>
+            {{ lowStockApiItems()!.length }} item(s) currently below threshold
+          </span>
+        </div>
+
+      </div>
+      @if (lowStockApiItems()!.length === 0) {
+
+        <div class="inventory-result-empty">
+          ✓ No low-stock inventory items found.
+        </div>
+
+      } @else {
+
+        <div class="inventory-low-stock-list">
+
+          @for (item of lowStockApiItems()!; track item.id) {
+            <div class="inventory-low-stock-item">
+
+              <div>
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.category || 'Uncategorized' }}</span>
+              </div>
+              <div class="inventory-low-stock-quantity">
+                <strong>
+                  {{ item.quantity | number:'1.2-2' }}
+                  {{ item.unit }}
+                </strong>
+
+                <span>
+                  Min {{ item.minThreshold | number:'1.2-2' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+  <!-- WEEKLY COST RESULT -->
+  @if (weeklyCost() !== null) {
+    <div class="inventory-api-result">
+      <div class="inventory-result-header">
+        <div>
+          <strong>Weekly Inventory Cost</strong>
+          <span>
+            Cost summary returned by the weekly reporting endpoint
+          </span>
+        </div>
+      </div>
+
+ <div class="cost-summary-grid">
+
+  @for (
+    entry of getCostEntries(weeklyCost());
+    track entry.key
+  ) {
+
+    <div class="cost-summary-item">
+
+      <span>
+        {{ entry.key }}
+      </span>
+
+      <strong>
+        {{ entry.value }}
+      </strong>
+
+    </div>
+
+  }
+
+</div>
+
+    </div>
+
+  }
+
+
+  <!-- ======================================================= -->
+  <!-- MONTHLY COST RESULT -->
+  <!-- ======================================================= -->
+
+  @if (monthlyCost() !== null) {
+
+    <div class="inventory-api-result">
+
+      <div class="inventory-result-header">
+
+        <div>
+          <strong>
+            Monthly Inventory Cost
+          </strong>
+
+          <span>
+            Cost summary returned by the monthly reporting endpoint
+          </span>
+        </div>
+
+      </div>
+
+
+     <div class="cost-summary-grid">
+
+  @for (
+    entry of getCostEntries(monthlyCost());
+    track entry.key
+  ) {
+
+    <div class="cost-summary-item">
+
+      <span>
+        {{ entry.key }}
+      </span>
+
+      <strong>
+        {{ entry.value }}
+      </strong>
+
+    </div>
+
+  }
+
+</div>
+
+    </div>
+
+  }
+
+</div>
  
       <!-- Search -->
       <div class="filters-row">

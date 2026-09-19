@@ -1,11 +1,16 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InventoryResponse } from '../../core/models/model';
+import { CostSummaryResponse, InventoryResponse } from '../../core/models/model';
 import { InventoryService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
 import { CommonModule } from '@angular/common';
 
 type ModalMode = 'create' | 'edit' | 'restock' | null;
+
+interface CostSummaryEntry {
+  key: string;
+  value: unknown;
+}
 
 @Component({
   selector: 'app-inventory',
@@ -29,6 +34,11 @@ export class InventoryComponent implements OnInit {
   searchQuery   = signal('');
   catFilter     = signal('');
   showLowOnly   = signal(false);
+
+  lowStockApiItems = signal<InventoryResponse[] | null>(null);
+weeklyCost = signal<CostSummaryResponse | null>(null);
+monthlyCost = signal<CostSummaryResponse | null>(null);
+apiLoading = signal(false);
  
   lowStockCount = computed(() => this.items().filter(i => i.isLowStock).length);
   categories    = computed(() => [...new Set(this.items().map(i => i.category).filter(Boolean))].sort());
@@ -141,4 +151,57 @@ export class InventoryComponent implements OnInit {
     });
   }
 
+  loadLowStock(): void {
+  this.apiLoading.set(true);
+  this.invSvc.getLowStock().subscribe({
+    next: items => {
+      this.lowStockApiItems.set(items);
+      this.apiLoading.set(false);
+    },
+    error: () => {this.apiLoading.set(false);}
+  });
 }
+
+loadWeeklyCost(): void {
+  this.apiLoading.set(true);
+  this.invSvc.getWeeklyCost().subscribe({
+    next: summary => {
+      this.weeklyCost.set(summary);
+      this.apiLoading.set(false);
+    },
+
+    error: () => {this.apiLoading.set(false);}
+  });
+}
+
+loadMonthlyCost(): void {
+  this.apiLoading.set(true);
+  this.invSvc.getMonthlyCost().subscribe({
+    next: summary => {
+      this.monthlyCost.set(summary);
+      this.apiLoading.set(false);
+    },
+
+    error: () => {this.apiLoading.set(false);}
+  });
+}
+
+getCostEntries(summary: CostSummaryResponse | null): CostSummaryEntry[] {
+
+  if (!summary) {
+    return [];
+  }
+
+  return Object.entries(summary)
+    .filter(([, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => ({
+      key,
+      value
+    }));
+
+}
+
+}
+
+// Make use of "getLowStock(): Observable<InventoryResponse[]>" , 
+// "getWeeklyCost(): Observable<CostSummaryResponse>" & "getMonthlyCost(): Observable<CostSummaryResponse>" methods

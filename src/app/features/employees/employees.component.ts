@@ -28,6 +28,12 @@ readonly auth = inject(AuthService);
   searchQuery  = signal('');
   roleFilter   = signal('');
   activeOnly   = signal(false);
+
+  lookupUserId = signal('');
+  lookupEmployeeId = signal('');
+  lookupRole = signal<UserRole | ''>('');
+
+  lookupLoading = signal(false);
  
   filtered = computed(() => {
     let list = this.users();
@@ -42,12 +48,12 @@ readonly auth = inject(AuthService);
   });
  
   userForm = this.fb.group({
-    fname:       ['', Validators.required],
-    lname:       ['', Validators.required],
-    email:       ['', [Validators.required, Validators.email]],
-    password:    ['', [Validators.required, Validators.minLength(8)]],
+    fname: ['', Validators.required],
+    lname: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     phoneNumber: [''],
-    role:        ['EMPLOYEE' as UserRole]
+    role: ['EMPLOYEE' as UserRole]
   });
  
   initials(u: UserResponse): string {
@@ -74,6 +80,83 @@ readonly auth = inject(AuthService);
       next:  users => { this.users.set(users); this.loading.set(false); },
       error: ()    => this.loading.set(false)
     });
+  }
+
+  // GET USER BY ID
+   loadUserById(): void {
+    const id = Number(this.lookupUserId());
+
+    if (!id || id <= 0) {
+      this.toast.warning('Please enter a valid user ID.');
+      return;
+    }
+    this.lookupLoading.set(true);
+    this.userSvc.getUserById(id).subscribe({
+      next: user => {
+        /*
+         * Keep the result compatible with the existing
+         * users[] based UI.
+         */
+        this.users.set([user]);
+        this.lookupLoading.set(false);
+        this.toast.success(`User #${id} loaded.`);
+      },
+      error: () => { this.lookupLoading.set(false);}
+    });
+  }
+
+  // GET USERS BY ROLE
+  loadUsersByRole(): void {
+    const role = this.lookupRole();
+    if (!role) {
+      this.toast.warning('Please select a role.');
+      return;
+    }
+
+    this.lookupLoading.set(true);
+    this.userSvc.getUsersByRole(
+      role as UserRole).subscribe({
+      next: users => {
+        this.users.set(users);
+        this.lookupLoading.set(false);
+        this.toast.success(`${users.length} user(s) with role ${role} loaded.`);
+      },
+
+      error: () => {this.lookupLoading.set(false);}
+    });
+  }
+
+  // GET EMPLOYEE BY ID
+  loadEmployeeById(): void {
+    const id = Number(this.lookupEmployeeId());
+
+    if (!id || id <= 0) {
+      this.toast.warning('Please enter a valid employee ID.');
+      return;
+    }
+    this.lookupLoading.set(true);
+    this.userSvc.getEmployeeById(id).subscribe({
+      next: users => {
+        /*
+         * Service currently returns UserResponse[].
+         * Keep it as an array so the existing users grid
+         * can display the result without changing its model.
+         */
+        this.users.set(users);
+        this.lookupLoading.set(false);
+        this.toast.success(`Employee #${id} loaded.`);
+      },
+
+      error: () => {this.lookupLoading.set(false);}
+    });
+  }
+
+  // CLEAR LOOKUP
+  clearLookup(): void {
+    this.lookupUserId.set('');
+    this.lookupEmployeeId.set('');
+    this.lookupRole.set('');
+    this.load();
   }
  
   openCreate(): void {
@@ -206,3 +289,5 @@ readonly auth = inject(AuthService);
     });
   }
 }
+// Make "getUserById(id: number): Observable<UserResponse>" , "getUsersByRole(role: UserRole): Observable<UserResponse[]>"
+// & "getEmployeeById(id : number): Observable<UserResponse[]>" 

@@ -135,6 +135,8 @@ export interface CostSummaryResponse {
   from: string;
   to: string;
   period: string;
+  totalItems?: number;
+  lowStockCount?: number;
 }
 
 // ── Orders ────────────────────────────────────────────────
@@ -249,6 +251,15 @@ export interface RevenueSummary {
   totalRevenue: number;
   totalTax?: number;
   totalOrders: number;
+  from: string;
+  to: string;
+  period: string;
+}
+
+export interface InventoryCostSummary {
+  totalCost: number;
+  totalItems: number;
+  lowStockCount: number;
   from: string;
   to: string;
   period: string;

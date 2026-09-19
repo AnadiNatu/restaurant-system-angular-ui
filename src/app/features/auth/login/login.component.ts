@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { CommonModule } from '@angular/common';
+import { AuthResponse } from '../../../core/models/model';
 
 @Component({
   selector: 'app-login',
@@ -30,11 +31,13 @@ private fb    = inject(FormBuilder);
   get password() { return this.form.controls.password; }
  
   submit(): void {
+    console.log('🔥🔥🔥 SIGN IN BUTTON HANDLER FIRED 🔥🔥🔥');
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading.set(true);
  
     this.auth.login(this.form.getRawValue() as any).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('🔥 LOGIN SUCCESS:', response);
         this.toast.success('Welcome back!');
         this.router.navigate(['/dashboard']);
       },

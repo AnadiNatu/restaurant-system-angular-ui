@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './reports.component.css'
 })
 export class ReportsComponent implements OnInit {
-  private reportSvc = inject(ReportService);
+private reportSvc = inject(ReportService);
   private invSvc    = inject(InventoryService);
  
   loading = signal(true);
@@ -19,25 +19,25 @@ export class ReportsComponent implements OnInit {
   revenue = signal<RevenueSummary | null>(null);
   invCost = signal<CostSummaryResponse | null>(null);
  
-  avgRevenue() {
+  avgRevenue(): number {
     const r = this.revenue();
     if (!r || r.totalOrders === 0) return 0;
     return r.totalRevenue / r.totalOrders;
   }
  
-  revenueExclTaxPct() {
+  revenueExclTaxPct(): number {
     const r = this.revenue();
     if (!r || r.totalRevenue === 0) return 100;
     return Math.min(100, ((r.totalRevenue - (r.totalTax ?? 0)) / r.totalRevenue) * 100);
   }
  
-  taxPct() {
+  taxPct(): number {
     const r = this.revenue();
     if (!r || r.totalRevenue === 0) return 0;
     return Math.min(100, ((r.totalTax ?? 0) / r.totalRevenue) * 100);
   }
  
-  grossMarginPct() {
+  grossMarginPct(): number {
     const r = this.revenue();
     const c = this.invCost();
     if (!r || !c || r.totalRevenue === 0) return 0;
@@ -55,19 +55,21 @@ export class ReportsComponent implements OnInit {
     this.loading.set(true);
     const isWeekly = this.period() === 'weekly';
  
-    const rev$ = isWeekly ? this.reportSvc.getWeeklyRevenue() : this.reportSvc.getMonthlyRevenue();
-    const inv$ = isWeekly ? this.invSvc.getWeeklyCost()      : this.invSvc.getMonthlyCost();
- 
+    const rev$ = isWeekly ? this.reportSvc.getWeeklyRevenue()  : this.reportSvc.getMonthlyRevenue();
+    // const inv$ = isWeekly ? this.invSvc.getWeeklyCost() 
+    const inv$ = isWeekly
+      ? this.reportSvc.getWeeklyInventoryCost()
+      : this.reportSvc.getMonthlyInventoryCost();
+//  Need to add getWeeklyInventoryCost(): Observable<InventoryCostSummary> & getMonthlyInventoryCost(): Observable<InventoryCostSummary>
     rev$.subscribe({
       next: r => {
         this.revenue.set(r);
         inv$.subscribe({
-          next: c => { this.invCost.set(c); this.loading.set(false); },
+          next:  c => { this.invCost.set(c); this.loading.set(false); },
           error: () => this.loading.set(false)
         });
       },
       error: () => this.loading.set(false)
     });
   }
-
 }
